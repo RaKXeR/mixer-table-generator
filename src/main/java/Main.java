@@ -43,7 +43,7 @@ public class Main {
 
         // Copy player list and use it to generate unique tables
         List<Player> players = new ArrayList<>(playerMap.values());
-        Collection<Table> tables = generateTables(players);
+        Collection<Table> tables = generateTables(players, 4);
 
         // Fill tables with remaining players
         topUpTables(tables, players);
@@ -53,13 +53,13 @@ public class Main {
         }
     }
 
-    private static Collection<Table> generateTables(List<Player> players) {
+    private static Collection<Table> generateTables(List<Player> players, int maxSize) {
         List<Table> tables = new ArrayList<>();
         // Generate tables until one comes out null, meaning we ran out of players
-        Table table = Table.createTable(players, 4);
+        Table table = Table.createTable(players, maxSize);
         while (table != null) {
             tables.add(table);
-            table = Table.createTable(players, 4);
+            table = Table.createTable(players, maxSize);
         }
         return tables;
     }

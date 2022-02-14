@@ -39,7 +39,7 @@ public class Table {
     }
 
     public boolean addPlayer(Player player) {
-        // Return if table is full or player is alreayd in the table
+        // Return if table is full or player is already in the table
         if (isFull() || players.contains(player)) {
             return false;
         }
@@ -70,6 +70,7 @@ public class Table {
         for (Player tablePlayer : players) {
             if (tablePlayer.hasPlayedWith(player)) {
                 hasPlayedWith = true;
+                break;
             }
         }
         return hasPlayedWith;

@@ -66,12 +66,10 @@ public class Main {
     }
 
     private static void topUpTables(Collection<Table> tables, List<Player> players) {
-        // Increase table capacity to fit in leftover players
         for (Table table : tables) {
+            // Increase table capacity to fit in leftover players
             table.incrementSize();
-        }
-        // Remove player from player list if we find a table for them
-        for (Table table : tables) {
+            // Remove player from player list if we find a table for them
             players.removeIf(player -> !player.hasPlayedWith(table.getPlayers()) && table.addPlayer(player));
         }
     }

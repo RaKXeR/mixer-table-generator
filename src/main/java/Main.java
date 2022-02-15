@@ -2,6 +2,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import model.Player;
 import model.Table;
+import model.TableBuilder;
 import parser.PlayerList;
 
 import java.io.FileNotFoundException;
@@ -56,10 +57,10 @@ public class Main {
     private static Collection<Table> generateTables(List<Player> players, int maxSize) {
         List<Table> tables = new ArrayList<>();
         // Generate tables until one comes out null, meaning we ran out of players
-        Table table = Table.createTable(players, maxSize);
+        Table table = TableBuilder.createTable(players, maxSize);
         while (table != null) {
             tables.add(table);
-            table = Table.createTable(players, maxSize);
+            table = TableBuilder.createTable(players, maxSize);
         }
         return tables;
     }
@@ -71,7 +72,7 @@ public class Main {
         }
         // Remove player from player list if we find a table for them
         for (Table table : tables) {
-            players.removeIf(player -> !table.hasPlayedWith(player) && table.addPlayer(player));
+            players.removeIf(player -> !player.hasPlayedWith(table.getPlayers()) && table.addPlayer(player));
         }
     }
 

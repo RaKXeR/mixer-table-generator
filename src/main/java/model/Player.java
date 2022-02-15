@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Player {
@@ -21,6 +22,10 @@ public class Player {
     public void markAsPlayedWith(Player player) {
         hasntPlayedWith.remove(player);
         player.hasntPlayedWith.remove(this);
+    }
+
+    public boolean hasPlayedWith(Collection<Player> player) {
+        return !hasntPlayedWith.containsAll(player);
     }
 
     public boolean hasPlayedWith(Player player) {

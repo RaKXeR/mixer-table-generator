@@ -26,10 +26,15 @@ public class TableBuilder {
         // Create new table of specified max size and add pivot to it
         Table table = new Table(tableSize);
         table.addPlayer(pivot);
-        // Fill table with players that haven't played with pivot
+        // Fill table with players that haven't played with pivot, giving up if we can't find anything
+        int count = 0, maxCount = players.size() * 3;
         while (!table.isFull()) {
             // Get a random player our pivot hasn't played with yet
             Player player = pivot.getPlayer();
+            // Return null if we ran out of players, or if it took too long to generate our table
+            if (player == null || ++count >= maxCount) {
+                return null;
+            }
             // Find another player if this one is unavailable
             if (!players.contains(player)) {
                 continue;
@@ -40,9 +45,7 @@ public class TableBuilder {
             // Add player to table if he hasn't played with any table members yet
             if (!hasPlayed && table.addPlayer(player)) {
                 // Mark table members as played with
-                for (Player tablePlayer : table.getPlayers()) {
-                    tablePlayer.markAsPlayedWith(player);
-                }
+                player.markAsPlayedWith(table.getPlayers());
                 // Remove from buffered list of available table pivots
                 players.remove(player);
             }

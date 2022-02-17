@@ -70,7 +70,13 @@ public class Main {
             // Increase table capacity to fit in leftover players
             table.incrementSize();
             // Remove player from player list if we find a table for them
-            players.removeIf(player -> !player.hasPlayedWith(table.getPlayers()) && table.addPlayer(player));
+            players.removeIf(player -> {
+                boolean addPlayer = !player.hasPlayedWith(table.getPlayers()) && table.addPlayer(player);
+                if (addPlayer) {
+                    player.markAsPlayedWith(table.getPlayers());
+                }
+                return addPlayer;
+            });
         }
     }
 

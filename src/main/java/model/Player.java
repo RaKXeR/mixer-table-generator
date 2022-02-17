@@ -18,6 +18,11 @@ public class Player {
         this.hasntPlayedWith.remove(this);
     }
 
+    public void markAsPlayedWith(Collection<Player> players) {
+        hasntPlayedWith.removeAll(players);
+        players.forEach(player -> player.hasntPlayedWith.remove(this));
+    }
+
     public void markAsPlayedWith(Player player) {
         hasntPlayedWith.remove(player);
         player.hasntPlayedWith.remove(this);
@@ -37,6 +42,10 @@ public class Player {
 
     // Returns a random player this player hasn't played with
     public Player getPlayer() {
+        // Return null if there are no players left
+        if (hasntPlayedWith.size() <= 0) {
+            return null;
+        }
         int rand = (int) Math.floor(Math.random() * hasntPlayedWith.size());
         return hasntPlayedWith.get(rand);
     }

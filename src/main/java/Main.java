@@ -7,10 +7,7 @@ import parser.PlayerList;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Main {
 
@@ -42,15 +39,30 @@ public class Main {
             player.setHasntPlayedWith(playerMap.values());
         }
 
-        // Copy player list and use it to generate unique tables
-        List<Player> players = new ArrayList<>(playerMap.values());
-        Collection<Table> tables = generateTables(players, 4);
 
-        // Fill tables with remaining players
-        topUpTables(tables, players);
+        List<Collection<Table>> tableList = new LinkedList<>();
+        List<Player> players;
+        do {
+            // Copy player list and use it to generate unique tables
+            players = new ArrayList<>(playerMap.values());
+            Collection<Table> tables = generateTables(players, 4);
 
-        for (Table table : tables) {
-            System.out.println(table);
+            // Fill tables with remaining players
+            topUpTables(tables, players);
+            if (tables.size() > 0) {
+                tableList.add(tables);
+            }
+
+            //TODO: Ask user if they want to store changes or not
+            //TODO: Restore connections if we want to roll back
+        } while (players.size() == 0);
+
+        int i = 0;
+        for (Collection<Table> tableCollection : tableList) {
+            System.out.printf("Table list no.%d (size %d):\n", ++i, tableCollection.size());
+            for (Table table : tableCollection) {
+                System.out.println(table);
+            }
         }
     }
 

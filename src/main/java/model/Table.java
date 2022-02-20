@@ -38,6 +38,10 @@ public class Table {
         return players;
     }
 
+    public boolean hasPlayer(Player player) {
+        return players.contains(player);
+    }
+
     public boolean addPlayer(Player player) {
         // Return if table is full or player is already in the table
         if (isFull() || players.contains(player)) {
@@ -63,6 +67,10 @@ public class Table {
             b.append(player).append(" ");
         }
         return b.toString();
+    }
+
+    public int getPlayerCount() {
+        return players.size();
     }
 
 }

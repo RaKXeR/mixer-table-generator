@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import model.Player;
+import model.Round;
 import model.Table;
 import model.TableBuilder;
 import parser.PlayerList;
@@ -40,20 +41,20 @@ public class Main {
         }
 
 
-        List<Collection<Table>> tableList = new LinkedList<>();
+        List<Round> rounds = new LinkedList<>();
         List<Player> players;
         // Keep track of how many times we generated a round that had leftover players to prevent infinite loops
         int retryCounter = 0;
         do {
             // Copy player list and use it to generate unique tables
             players = new ArrayList<>(playerMap.values());
-            Collection<Table> tables = generateTables(players, 4);
+            Round round = generateTables(players, 4);
 
             // Fill tables with remaining players
-            topUpTables(tables, players);
+            topUpTables(round, players);
 
             // Try again if not all players fit in
-            if (players.size() > 0) {
+            if (players.size() > 0 || !round.hasAllPlayers(playerMap.values())) {
                 // Break out of loop if finding a set of tables is taking too many attempts
                 if (++retryCounter >= TableBuilder.TIMEOUT) {
                     break;
@@ -62,13 +63,13 @@ public class Main {
                 continue;
             }
 
-            if (tables.size() > 0) {
+            if (round.size() > 0) {
                 //TODO: Ask user if they want to store changes or not
-                tableList.add(tables);
+                rounds.add(round);
             }
 
             // Mark table members as played with for each table now that we know this round is to be kept
-            for (Table table : tables) {
+            for (Table table : round) {
                 for (Player player : table.getPlayers()) {
                     player.markAsPlayedWith(table.getPlayers());
                 }
@@ -77,7 +78,7 @@ public class Main {
         } while (players.size() == 0);
 
         int i = 0;
-        for (Collection<Table> tableCollection : tableList) {
+        for (Collection<Table> tableCollection : rounds) {
             System.out.printf("Round %d (%d tables):\n", ++i, tableCollection.size());
             for (Table table : tableCollection) {
                 System.out.println(table);
@@ -86,19 +87,19 @@ public class Main {
         }
     }
 
-    private static Collection<Table> generateTables(List<Player> players, int maxSize) {
-        List<Table> tables = new ArrayList<>();
+    private static Round generateTables(List<Player> players, int maxSize) {
+        Round round = new Round();
         // Generate tables until one comes out null, meaning we ran out of players
         Table table = TableBuilder.createTable(players, maxSize);
         while (table != null) {
-            tables.add(table);
+            round.add(table);
             table = TableBuilder.createTable(players, maxSize);
         }
-        return tables;
+        return round;
     }
 
-    private static void topUpTables(Collection<Table> tables, List<Player> players) {
-        for (Table table : tables) {
+    private static void topUpTables(Round round, List<Player> players) {
+        for (Table table : round) {
             // Increase table capacity to fit in leftover players
             table.incrementSize();
             // Remove player from player list if we find a table for them

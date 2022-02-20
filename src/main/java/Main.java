@@ -42,6 +42,8 @@ public class Main {
 
         List<Collection<Table>> tableList = new LinkedList<>();
         List<Player> players;
+        // Keep track of how many times we generated a round that had leftover players to prevent infinite loops
+        int retryCounter = 0;
         do {
             // Copy player list and use it to generate unique tables
             players = new ArrayList<>(playerMap.values());
@@ -49,20 +51,38 @@ public class Main {
 
             // Fill tables with remaining players
             topUpTables(tables, players);
+
+            // Try again if not all players fit in
+            if (players.size() > 0) {
+                // Break out of loop if finding a set of tables is taking too many attempts
+                if (++retryCounter >= TableBuilder.TIMEOUT) {
+                    break;
+                }
+                players.clear();
+                continue;
+            }
+
             if (tables.size() > 0) {
+                //TODO: Ask user if they want to store changes or not
                 tableList.add(tables);
             }
 
-            //TODO: Ask user if they want to store changes or not
-            //TODO: Restore connections if we want to roll back
+            // Mark table members as played with for each table now that we know this round is to be kept
+            for (Table table : tables) {
+                for (Player player : table.getPlayers()) {
+                    player.markAsPlayedWith(table.getPlayers());
+                }
+            }
+
         } while (players.size() == 0);
 
         int i = 0;
         for (Collection<Table> tableCollection : tableList) {
-            System.out.printf("Table list no.%d (size %d):\n", ++i, tableCollection.size());
+            System.out.printf("Round %d (%d tables):\n", ++i, tableCollection.size());
             for (Table table : tableCollection) {
                 System.out.println(table);
             }
+            System.out.println();
         }
     }
 
@@ -82,13 +102,7 @@ public class Main {
             // Increase table capacity to fit in leftover players
             table.incrementSize();
             // Remove player from player list if we find a table for them
-            players.removeIf(player -> {
-                boolean addPlayer = !player.hasPlayedWith(table.getPlayers()) && table.addPlayer(player);
-                if (addPlayer) {
-                    player.markAsPlayedWith(table.getPlayers());
-                }
-                return addPlayer;
-            });
+            players.removeIf(player -> !player.hasPlayedWith(table.getPlayers()) && table.addPlayer(player));
         }
     }
 

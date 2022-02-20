@@ -4,9 +4,11 @@ import java.util.List;
 
 public class TableBuilder {
 
+    // Number of times we'll try to fill the table before we give up
+    public static int TIMEOUT = 1000;
 
     /** Creates a new table with randomly selected players from the given list while ensuring that
-     * none of the seated players have been seated together before.
+     * none of the seated players have been seated together before. Does not mark each player as played with.
      * @param players list of available players for seating. Players are removed when seated at the table
      * @param tableSize preferred table size, sets the limit for player capacity
      * @return a new table with random unrelated players
@@ -27,12 +29,12 @@ public class TableBuilder {
         Table table = new Table(tableSize);
         table.addPlayer(pivot);
         // Fill table with players that haven't played with pivot, giving up if we can't find anything
-        int count = 0, maxCount = players.size() * 3;
+        int retryCounter = 0;
         while (!table.isFull()) {
             // Get a random player our pivot hasn't played with yet
             Player player = pivot.getPlayer();
             // Return null if we ran out of players, or if it took too long to generate our table
-            if (player == null || ++count >= maxCount) {
+            if (player == null || ++retryCounter >= TIMEOUT) {
                 return null;
             }
             // Find another player if this one is unavailable
@@ -44,8 +46,6 @@ public class TableBuilder {
 
             // Add player to table if he hasn't played with any table members yet
             if (!hasPlayed && table.addPlayer(player)) {
-                // Mark table members as played with
-                player.markAsPlayedWith(table.getPlayers());
                 // Remove from buffered list of available table pivots
                 players.remove(player);
             }

@@ -1,9 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import model.Player;
-import model.Round;
-import model.Table;
-import model.TableBuilder;
+import model.*;
 import parser.PlayerList;
 
 import java.io.FileNotFoundException;
@@ -48,10 +45,9 @@ public class Main {
         do {
             // Copy player list and use it to generate unique tables
             players = new ArrayList<>(playerMap.values());
-            Round round = generateTables(players, 4);
 
-            // Fill tables with remaining players
-            topUpTables(round, players);
+            // Generate a round of tables with players who haven't played with eachother
+            Round round = RoundBuilder.createRound(players, 4);
 
             // Try again if not all players fit in
             if (players.size() > 0 || !round.hasAllPlayers(playerMap.values())) {
@@ -84,26 +80,6 @@ public class Main {
                 System.out.println(table);
             }
             System.out.println();
-        }
-    }
-
-    private static Round generateTables(List<Player> players, int maxSize) {
-        Round round = new Round();
-        // Generate tables until one comes out null, meaning we ran out of players
-        Table table = TableBuilder.createTable(players, maxSize);
-        while (table != null) {
-            round.add(table);
-            table = TableBuilder.createTable(players, maxSize);
-        }
-        return round;
-    }
-
-    private static void topUpTables(Round round, List<Player> players) {
-        for (Table table : round) {
-            // Increase table capacity to fit in leftover players
-            table.incrementSize();
-            // Remove player from player list if we find a table for them
-            players.removeIf(player -> !player.hasPlayedWith(table.getPlayers()) && table.addPlayer(player));
         }
     }
 

@@ -1,5 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import commands.GenerateNewRound;
+import commands.ListCurrentPlayers;
 import model.*;
 import parser.PlayerList;
 
@@ -13,6 +15,7 @@ public class Main {
     private static final String PLAYER_LIST = "players.json";
 
     private static final HashMap<String, Player> playerMap = new HashMap<>();
+    private static final List<Round> rounds = new ArrayList<>();
 
     public static void main(String[] args) {
         // Get player list from JSON
@@ -37,32 +40,45 @@ public class Main {
             player.setHasntPlayedWith(playerMap.values());
         }
 
+        // Launch CLI for controlling player-related functionality
+        Scanner s = new Scanner(System.in);
+        while (true) {
+            // Present options to user
+            System.out.print(
+                    "/--------------------------------------COMMANDS--------------------------------------\\\n" +
+                            "|1. Generate new round      - creates new tables with all the players                |\n" +
+                            "|2. List current players    - shows all available players                            |\n" +
+                            "|3. Add player(s)           - adds one or more new players to the collection         |\n" +
+                            "|4. Remove player(s)        - removes one or more players from collection            |\n" +
+                            "|5. Disconnect players      - prevents 2 players from matchmaking                    |\n" +
+                            "|------------------------------------------------------------------------------------|\n" +
+                            "|6. List previous rounds    - shows each table of each previously generated round    |\n" +
+                            "|7. List player connections - lists players who haven't played with the given player |\n" +
+                            "|8. Set target table size   - sets the preferred table size (bypassed if needed)     |\n" +
+                            "|q. Quit                    - exits the program                                      |\n" +
+                            "\\------------------------------------------------------------------------------------/\n" +
+                            ": "
+            );
 
-        // Generate as many rounds as possible for the current player list
-        List<Round> rounds = new LinkedList<>();
-        Round round;
-        while ((round = RoundBuilder.createRound(playerMap.values(), 4)) != null) {
-            // Generate a round of tables with players who haven't played with each other
-                rounds.add(round);
-                //TODO: Ask user if they want to store changes or not
-
-                // Mark table members as played with for each table now that we know this round is to be kept
-                for (Table table : round) {
-                    for (Player player : table.getPlayers()) {
-                        player.markAsPlayedWith(table.getPlayers());
-                    }
+            // Process numeric inputs
+            if (s.hasNextInt()) {
+                int choice = s.nextInt();
+                s.nextLine();
+                switch (choice) {
+                    case 1: GenerateNewRound.run(s, playerMap, rounds); continue;
+                    case 2: ListCurrentPlayers.run(s, playerMap); continue;
+                    default:
+                        System.out.println("The number you chose is invalid. Please select one from the given list.");
                 }
-        };
-
-        // List generated rounds
-        int i = 0;
-        for (Collection<Table> tableCollection : rounds) {
-            System.out.printf("Round %d (%d tables):\n", ++i, tableCollection.size());
-            for (Table table : tableCollection) {
-                System.out.println(table);
             }
-            System.out.println();
+
+            // Quit program if requested
+            String response = s.nextLine().trim().toLowerCase();
+            if (response.equals("q") || response.equals("quit") || response.equals("exit")) {
+                return;
+            }
         }
+
     }
 
 }

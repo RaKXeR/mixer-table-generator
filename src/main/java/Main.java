@@ -7,13 +7,14 @@ import parser.PlayerList;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
     // JSON file with player list on disk
     private static final String PLAYER_LIST = "players.json";
 
-    private static final HashMap<String, Player> playerMap = new HashMap<>();
+    private static final HashMap<String, Player> joinedMap = new HashMap<>(), leftMap = new HashMap<>();
     private static final List<Round> rounds = new ArrayList<>();
     private static final AtomicInteger preferredTableSize = new AtomicInteger(4);
 
@@ -32,12 +33,12 @@ public class Main {
 
         // Generate player objects based on player list
         for (String player : playerList.getPlayers()) {
-            playerMap.put(player, new Player(player));
+            joinedMap.put(player, new Player(player));
         }
 
         // Populate player nodes
-        for (Player player : playerMap.values()) {
-            player.setHasntPlayedWith(playerMap.values());
+        for (Player player : joinedMap.values()) {
+            player.setHasntPlayedWith(joinedMap.values());
         }
 
         // Launch CLI for controlling player-related functionality
@@ -65,8 +66,10 @@ public class Main {
                 int choice = s.nextInt();
                 s.nextLine();
                 switch (choice) {
-                    case 2: ListCurrentPlayers.run(s, playerMap); continue;
-                    case 1: GenerateNewRound.run(s, playerMap, rounds, preferredTableSize); continue;
+                    case 1: GenerateNewRound.run(s, joinedMap, rounds, preferredTableSize); continue;
+                    case 2: ListCurrentPlayers.run(s, joinedMap); continue;
+                    case 3: AddNewPlayers.run(s, joinedMap, leftMap); continue;
+                    case 4: RemovePlayers.run(s, joinedMap, leftMap); continue;
                     case 8: SetTableSize.run(s, preferredTableSize); continue;
                     default:
                         System.out.println("The number you chose is invalid. Please select one from the given list.");

@@ -70,6 +70,7 @@ public class Main {
                     case 2: ListCurrentPlayers.run(s, joinedMap); continue;
                     case 3: AddNewPlayers.run(s, joinedMap, leftMap); continue;
                     case 4: RemovePlayers.run(s, joinedMap, leftMap); continue;
+                    case 5: DisconnectPlayers.run(s, joinedMap, leftMap); continue;
                     case 8: SetTableSize.run(s, preferredTableSize); continue;
                     default:
                         System.out.println("The number you chose is invalid. Please select one from the given list.");

@@ -14,6 +14,12 @@ public class Player {
         this.name = name;
     }
 
+    public void setHasntPlayedWith(Player player) {
+        if (!hasntPlayedWith.contains(player) && player != this) {
+            hasntPlayedWith.add(player);
+        }
+    }
+
     public void setHasntPlayedWith(Collection<Player> hasntPlayedWith) {
         this.hasntPlayedWith.addAll(hasntPlayedWith);
         this.hasntPlayedWith.remove(this);
@@ -35,6 +41,10 @@ public class Player {
 
     public boolean hasPlayedWith(Player player) {
         return !hasntPlayedWith.contains(player);
+    }
+
+    public List<Player> getHasntPlayedWith() {
+        return hasntPlayedWith;
     }
 
     public String getName() {

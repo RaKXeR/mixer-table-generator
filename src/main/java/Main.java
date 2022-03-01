@@ -1,7 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import commands.GenerateNewRound;
-import commands.ListCurrentPlayers;
+import commands.*;
 import model.*;
 import parser.PlayerList;
 
@@ -16,6 +15,7 @@ public class Main {
 
     private static final HashMap<String, Player> playerMap = new HashMap<>();
     private static final List<Round> rounds = new ArrayList<>();
+    private static final AtomicInteger preferredTableSize = new AtomicInteger(4);
 
     public static void main(String[] args) {
         // Get player list from JSON
@@ -50,7 +50,7 @@ public class Main {
                             "|2. List current players    - shows all available players                            |\n" +
                             "|3. Add player(s)           - adds one or more new players to the collection         |\n" +
                             "|4. Remove player(s)        - removes one or more players from collection            |\n" +
-                            "|5. Disconnect players      - prevents 2 players from matchmaking                    |\n" +
+                            "|5. Disconnect player(s)    - prevent player from matchmaking with provided players  |\n" +
                             "|------------------------------------------------------------------------------------|\n" +
                             "|6. List previous rounds    - shows each table of each previously generated round    |\n" +
                             "|7. List player connections - lists players who haven't played with the given player |\n" +
@@ -65,8 +65,9 @@ public class Main {
                 int choice = s.nextInt();
                 s.nextLine();
                 switch (choice) {
-                    case 1: GenerateNewRound.run(s, playerMap, rounds); continue;
                     case 2: ListCurrentPlayers.run(s, playerMap); continue;
+                    case 1: GenerateNewRound.run(s, playerMap, rounds, preferredTableSize); continue;
+                    case 8: SetTableSize.run(s, preferredTableSize); continue;
                     default:
                         System.out.println("The number you chose is invalid. Please select one from the given list.");
                 }

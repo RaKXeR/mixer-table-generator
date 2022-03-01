@@ -7,6 +7,7 @@ import java.util.List;
 public class Player {
 
     private final String name;
+
     private final List<Player> hasntPlayedWith = new ArrayList<>();
 
     public Player(String name) {

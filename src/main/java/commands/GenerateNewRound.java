@@ -8,12 +8,13 @@ import model.Table;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GenerateNewRound {
 
-    public static void run(Scanner s, HashMap<String, Player> players, Collection<Round> rounds) {
+    public static void run(Scanner s, HashMap<String, Player> players, Collection<Round> rounds, AtomicInteger preferredTableSize) {
         // Create new round
-        Round round = RoundBuilder.createRound(players.values(), 4);
+        Round round = RoundBuilder.createRound(players.values(), preferredTableSize.get());
         if (round == null) {
             System.out.println("No valid new round was found.");
             return;

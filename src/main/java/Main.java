@@ -71,6 +71,7 @@ public class Main {
                     case 3: AddNewPlayers.run(s, joinedMap, leftMap); continue;
                     case 4: RemovePlayers.run(s, joinedMap, leftMap); continue;
                     case 5: DisconnectPlayers.run(s, joinedMap, leftMap); continue;
+                    case 6: ListPreviousRounds.run(rounds); continue;
                     case 7: ListPlayerConnections.run(s, joinedMap, leftMap); continue;
                     case 8: SetTableSize.run(s, preferredTableSize); continue;
                     default:
